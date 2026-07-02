@@ -1,0 +1,10 @@
+requests
+beautifulsoup4
+steamid-converter
+time
+os
+sourceserver
+pyperclip
+tqdm
+humanize
+datetime

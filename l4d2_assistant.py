@@ -17,14 +17,24 @@ if __name__ == '__main__':
     from tqdm import tqdm
     import humanize
     import datetime
-    
+
+    os.system('winvar > OS.txt')
+    with open('OS.txt','r') as file:
+        file = file.readlines()
+    if len(file) > 0:
+        OS = 'Windows'
+        clear = 'cls'
+    else:
+        OS = 'UNIX'
+        clear = 'clear'
+
     with open('console file path.txt','r') as file:
-        path = file.readlines()[0]
+        path = file.readlines()[0].strip()
 
     ip_address = 'None'
     in_game = False
-    with open(path,'w') as file:
-        file.write('')
+    # with open(path,'w') as file:
+    #     file.write('')
 
     # User defined servers
     servers = {
@@ -62,8 +72,7 @@ if __name__ == '__main__':
             ##########################################################################################################################################
             # Help function
             if 'Usage:  help <cvarname>' in log:
-                with open(path,'w') as file:
-                    file.write('')
+                
                 print('Available functions on l4d2 console:')
                 print('')
                 print('status  -  Performs a background check on all players in the game.')
@@ -99,8 +108,7 @@ if __name__ == '__main__':
             # Print the location of the console.log file defined in the text file 'console file path.txt'.
             elif 'Unknown command "log_filepath"' in log or 'Unknown command: log_filepath' in log:
                 print(path)
-                with open(path,'w') as file:
-                    file.write('')
+                
                 time.sleep(10)
 
             ##########################################################################################################################################
@@ -112,8 +120,7 @@ if __name__ == '__main__':
                 in_game = True
                 srv = SourceServer(ip_address)
                 srv.close()
-                with open(path,'w') as file:
-                    file.write('')
+                
             ##########################################################################################################################################
             # Find IP address when joining a game.
             elif 'Connected to' in log:
@@ -123,8 +130,7 @@ if __name__ == '__main__':
                 in_game = True
                 srv = SourceServer(ip_address)
                 srv.close()
-                with open(path,'w') as file:
-                    file.write('')
+                
 
             ##########################################################################################################################################
             # Print and copy IP address of server.
@@ -133,8 +139,7 @@ if __name__ == '__main__':
                 print('Copied to clipboard.')
                 pyperclip.copy(ip_address)
                 time.sleep(5)
-                with open(path,'w') as file:
-                    file.write('')
+                
 
             ##########################################################################################################################################
             # New player alert.
@@ -150,8 +155,7 @@ if __name__ == '__main__':
                 except:
                     print('No defined IP address for the server, type net_channels in the console and retry.')
                     time.sleep(5)
-                with open(path,'w') as file:
-                    file.write('')
+                
                 time.sleep(3)
 
             ##########################################################################################################################################
@@ -175,8 +179,7 @@ if __name__ == '__main__':
                     except:
                         print('No defined IP address for the server, type net_channels in the console and retry.')
                         time.sleep(5)
-                with open(path,'w') as file:
-                    file.write('')
+                
 
             ##########################################################################################################################################
             # Print players and their connection time to the server.
@@ -234,8 +237,7 @@ if __name__ == '__main__':
             elif 'hostname:' in log:
                 index = logfile.index(log)
                 logfile = logfile[index:]
-                with open(path,'w') as file:
-                    file.write('')
+                
 
                 # Parse the log to find SteamIDs and convert them into useable profile URLs.
                 playerURLs = []
@@ -264,7 +266,7 @@ if __name__ == '__main__':
                         # Making the request and creating the soup.
                         headers = {"User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.96 Safari/537.36"} 
                         request = requests.get(str(url) + 'allcomments',headers=headers)
-                        soup = bs4.BeautifulSoup(request.content,'lxml')
+                        soup = bs4.BeautifulSoup(request.content,'html.parser')
 
                         # Parsing for the name of the player.
                         name = [i.text.strip() for i in soup.find_all('a',class_='whiteLink persona_name_text_content')][0]
@@ -312,7 +314,7 @@ if __name__ == '__main__':
                         # VAC ban check.
                         headers = {"User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.96 Safari/537.36"} 
                         request = requests.get(url,headers=headers)
-                        soup = bs4.BeautifulSoup(request.content,'lxml')
+                        soup = bs4.BeautifulSoup(request.content,'html.parser')
                         VAC_ban = [''.join(''.join(i.text.strip().split('\t')).split('\n\r\n')) for i in soup.find_all('div',class_='profile_ban_status')]
 
                         # Private check.
@@ -338,7 +340,7 @@ if __name__ == '__main__':
 
                             url = url + 'stats/L4D2?tab=stats&subtab=versus'
                             request = requests.get(url,headers=headers)
-                            soup = bs4.BeautifulSoup(request.content,'lxml')
+                            soup = bs4.BeautifulSoup(request.content,'html.parser')
 
                             try:
                                 # Hours finder
@@ -373,8 +375,7 @@ if __name__ == '__main__':
             # Free Server Checker
             elif 'mm_dedicated_force_servers' in log:
 
-                with open(path,'w') as file:
-                    file.write('')
+                
 
                 available_servers = {}
                 for location in servers:
@@ -418,8 +419,7 @@ if __name__ == '__main__':
             elif 'Unknown command: region' in log or 'Unknown command: "region"' in log:
                 print('Preferred region:',list(servers.keys())[0])
                 time.sleep(5)
-                with open(path,'w') as file:
-                    file.write('')
+                
 
             ##########################################################################################################################################
             # Settings function.
@@ -430,7 +430,7 @@ if __name__ == '__main__':
                 available_choices = ['server_region_preference']
                 # Enter main settings menu.
                 while var_1:
-                    os.system('cls')
+                    os.system(clear)
                     print('AVAILABLE SETTINGS')
                     print('')
                     for i in available_choices:
@@ -478,21 +478,23 @@ if __name__ == '__main__':
                                 break
                     break
 
-                with open(path,'w') as file:
-                    file.write('')
+                
 
             else:
                 pass
+
+            with open(path,'w') as file:
+                    file.write('')
             ##########################################################################################################################################
         print('Type help in the L4D2 console.')
         print('Awaiting command.')
         time.sleep(0.5)
-        os.system('cls')
+        os.system(clear)
         print('Type help in the L4D2 console.')
         print('Awaiting command..')
         time.sleep(0.5)
-        os.system('cls')
+        os.system(clear)
         print('Type help in the L4D2 console.')
         print('Awaiting command...')
-        time.sleep(0.5)
-        os.system('cls')    
+        time.sleep(0.5) 
+        os.system(clear)  
